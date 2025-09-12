@@ -241,6 +241,73 @@ projectCards.forEach(card => {
     });
 });
 
+// ==================== EMAILJS INTEGRATION ====================
+// Initialize EmailJS
+(function() {
+    emailjs.init('scoq4j10FSdYZp8BB'); // Your public key
+})();
+
+// ==================== FORM VALIDATION ====================
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function validateForm(formData) {
+    const errors = [];
+    
+    // Check required fields
+    if (!formData.name || formData.name.trim().length < 2) {
+        errors.push('Name must be at least 2 characters long');
+    }
+    
+    if (!formData.email || !validateEmail(formData.email)) {
+        errors.push('Please enter a valid email address');
+    }
+    
+    if (!formData.subject || formData.subject.trim().length < 3) {
+        errors.push('Subject must be at least 3 characters long');
+    }
+    
+    if (!formData.message || formData.message.trim().length < 10) {
+        errors.push('Message must be at least 10 characters long');
+    }
+    
+    return errors;
+}
+
+function showValidationErrors(errors) {
+    const errorMessage = errors.join('\n• ');
+    showNotification('Please fix the following:\n• ' + errorMessage, 'error');
+}
+
+function addFieldValidation() {
+    const emailInput = document.getElementById('email');
+    const nameInput = document.getElementById('name');
+    const subjectInput = document.getElementById('subject');
+    const messageInput = document.getElementById('message');
+    
+    // Real-time email validation
+    emailInput?.addEventListener('blur', function() {
+        const email = this.value.trim();
+        if (email && !validateEmail(email)) {
+            this.style.borderColor = '#ff6b6b';
+            this.style.boxShadow = '0 0 10px rgba(255, 107, 107, 0.3)';
+        } else {
+            this.style.borderColor = '';
+            this.style.boxShadow = '';
+        }
+    });
+    
+    // Clear error styling on input
+    [nameInput, emailInput, subjectInput, messageInput].forEach(input => {
+        input?.addEventListener('input', function() {
+            this.style.borderColor = '';
+            this.style.boxShadow = '';
+        });
+    });
+}
+
 // ==================== FORM HANDLING ====================
 const contactForm = document.getElementById('contactForm');
 
@@ -251,6 +318,13 @@ contactForm?.addEventListener('submit', function(e) {
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
     
+    // Validate form data
+    const validationErrors = validateForm(data);
+    if (validationErrors.length > 0) {
+        showValidationErrors(validationErrors);
+        return;
+    }
+    
     // Create success message
     const submitBtn = this.querySelector('.btn-submit');
     const originalText = submitBtn.innerHTML;
@@ -259,14 +333,25 @@ contactForm?.addEventListener('submit', function(e) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     submitBtn.disabled = true;
     
-    // Simulate form submission
-    setTimeout(() => {
+    // Send email using EmailJS
+    emailjs.send('service_pfwbh5u', 'template_gv7q564', {
+        name: data.name,
+        email: data.email,
+        subject: data.subject,
+        message: data.message
+    })
+    .then(function(response) {
+        console.log('SUCCESS!', response.status, response.text);
+        
         // Show success message
         submitBtn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
         submitBtn.style.background = 'linear-gradient(135deg, #00ff88 0%, #00d4ff 100%)';
         
         // Reset form
-        this.reset();
+        contactForm.reset();
+        
+        // Show success notification
+        showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
         
         // Restore button after 3 seconds
         setTimeout(() => {
@@ -275,21 +360,45 @@ contactForm?.addEventListener('submit', function(e) {
             submitBtn.disabled = false;
         }, 3000);
         
-        // Show alert (in production, you'd send the actual email)
-        showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
-    }, 1500);
+    }, function(error) {
+        console.log('FAILED...', error);
+        
+        // Show error message
+        submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed to Send';
+        submitBtn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+        
+        // Show error notification
+        showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
+        
+        // Restore button after 3 seconds
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.style.background = '';
+            submitBtn.disabled = false;
+        }, 3000);
+    });
 });
 
 // ==================== NOTIFICATION SYSTEM ====================
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
+    
+    let backgroundColor;
+    if (type === 'success') {
+        backgroundColor = 'linear-gradient(135deg, #00ff88 0%, #00d4ff 100%)';
+    } else if (type === 'error') {
+        backgroundColor = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+    } else {
+        backgroundColor = 'linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%)';
+    }
+    
     notification.style.cssText = `
         position: fixed;
         top: 100px;
         right: 20px;
         padding: 15px 25px;
-        background: ${type === 'success' ? 'linear-gradient(135deg, #00ff88 0%, #00d4ff 100%)' : 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)'};
+        background: ${backgroundColor};
         color: white;
         border-radius: 10px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -297,6 +406,9 @@ function showNotification(message, type = 'info') {
         transition: transform 0.3s ease;
         z-index: 10000;
         font-weight: 500;
+        white-space: pre-line;
+        max-width: 350px;
+        line-height: 1.4;
     `;
     notification.textContent = message;
     
@@ -859,6 +971,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize neon effects
     createNeonParticles();
     addTypingIndicator();
+    
+    // Initialize form validation
+    addFieldValidation();
     
     // Add keyboard shortcut to toggle trail effects
     document.addEventListener('keydown', (e) => {

@@ -8,6 +8,9 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -395,11 +398,7 @@
                         </a>
                     </div>
                 </div>
-                <form class="contact-form" id="contactForm" action="https://formsubmit.co/kamilsolanki99@gmail.com" method="POST">
-                    <input type="hidden" name="_subject" value="New Contact Form Submission">
-                    <input type="hidden" name="_captcha" value="false">
-                    <input type="hidden" name="_template" value="table">
-                    <input type="hidden" name="_next" value="https://kamilsolanki.com/thanks.html">
+                <form class="contact-form" id="contactForm">
                     <div class="form-group">
                         <input type="text" id="name" name="name" placeholder=" " required>
                         <label for="name">Your Name</label>
