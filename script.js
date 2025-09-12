@@ -542,6 +542,310 @@ function throttle(func, limit) {
     };
 }
 
+// ==================== NEON LIGHT TRAILS ====================
+function createNeonTrail(e) {
+    const trail = document.createElement('div');
+    trail.className = 'neon-trail';
+    trail.style.cssText = `
+        position: fixed;
+        width: 4px;
+        height: 4px;
+        background: radial-gradient(circle, var(--primary-color), transparent);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        left: ${e.clientX - 2}px;
+        top: ${e.clientY - 2}px;
+        animation: neon-trail-fade 0.8s ease-out forwards;
+        box-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+    `;
+    
+    document.body.appendChild(trail);
+    
+    setTimeout(() => {
+        trail.remove();
+    }, 800);
+}
+
+// Add neon trail animation styles
+const neonTrailStyles = document.createElement('style');
+neonTrailStyles.textContent = `
+    @keyframes neon-trail-fade {
+        0% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0);
+        }
+    }
+    
+    .neon-lightning {
+        position: fixed;
+        width: 2px;
+        height: 100vh;
+        background: linear-gradient(to bottom, transparent, var(--primary-color), transparent);
+        box-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+        animation: neon-lightning-flash 0.1s ease-in-out;
+        pointer-events: none;
+        z-index: 9998;
+    }
+    
+    @keyframes neon-lightning-flash {
+        0%, 100% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+    
+    .neon-pulse-ring {
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--accent-color);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9997;
+        animation: neon-pulse-expand 0.6s ease-out forwards;
+    }
+    
+    @keyframes neon-pulse-expand {
+        0% {
+            width: 20px;
+            height: 20px;
+            opacity: 1;
+        }
+        100% {
+            width: 100px;
+            height: 100px;
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(neonTrailStyles);
+
+// Enable neon trails on mouse movement
+let trailActive = true;
+document.addEventListener('mousemove', (e) => {
+    if (trailActive && Math.random() > 0.7) {
+        createNeonTrail(e);
+    }
+});
+
+// ==================== ENHANCED NEON PARTICLES ====================
+function createNeonParticles() {
+    const particlesContainer = document.querySelector('.particles-container');
+    
+    // Add more colorful particles
+    for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'neon-particle';
+        
+        const colors = ['var(--primary-color)', 'var(--secondary-color)', 'var(--accent-color)', 'var(--neon-pink)', 'var(--neon-green)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        particle.style.cssText = `
+            position: absolute;
+            width: ${Math.random() * 6 + 2}px;
+            height: ${Math.random() * 6 + 2}px;
+            background: ${randomColor};
+            border-radius: 50%;
+            left: ${Math.random() * 100}%;
+            animation: neon-particle-float ${15 + Math.random() * 10}s linear infinite;
+            animation-delay: ${Math.random() * 5}s;
+            box-shadow: 0 0 10px ${randomColor}, 0 0 20px ${randomColor};
+            opacity: 0.7;
+        `;
+        
+        particlesContainer.appendChild(particle);
+    }
+}
+
+// Add neon particle animation
+const neonParticleStyles = document.createElement('style');
+neonParticleStyles.textContent = `
+    @keyframes neon-particle-float {
+        0% {
+            transform: translateY(100vh) translateX(0) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.7;
+        }
+        90% {
+            opacity: 0.7;
+        }
+        100% {
+            transform: translateY(-100vh) translateX(${Math.random() * 200 - 100}px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(neonParticleStyles);
+
+// ==================== NEON LIGHTNING EFFECTS ====================
+function createLightning() {
+    const lightning = document.createElement('div');
+    lightning.className = 'neon-lightning';
+    lightning.style.left = Math.random() * window.innerWidth + 'px';
+    
+    document.body.appendChild(lightning);
+    
+    setTimeout(() => {
+        lightning.remove();
+    }, 100);
+}
+
+// Random lightning effects
+setInterval(() => {
+    if (Math.random() > 0.95) {
+        createLightning();
+    }
+}, 2000);
+
+// ==================== NEON CLICK EFFECTS ====================
+document.addEventListener('click', (e) => {
+    // Create pulse ring effect
+    const pulseRing = document.createElement('div');
+    pulseRing.className = 'neon-pulse-ring';
+    pulseRing.style.left = e.clientX - 10 + 'px';
+    pulseRing.style.top = e.clientY - 10 + 'px';
+    
+    document.body.appendChild(pulseRing);
+    
+    setTimeout(() => {
+        pulseRing.remove();
+    }, 600);
+    
+    // Create multiple small particles
+    for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: fixed;
+                width: 3px;
+                height: 3px;
+                background: var(--accent-color);
+                border-radius: 50%;
+                left: ${e.clientX}px;
+                top: ${e.clientY}px;
+                pointer-events: none;
+                z-index: 9996;
+                animation: neon-click-particle 0.8s ease-out forwards;
+                box-shadow: 0 0 5px var(--accent-color);
+            `;
+            
+            const angle = (i / 8) * 2 * Math.PI;
+            const distance = 50;
+            const endX = Math.cos(angle) * distance;
+            const endY = Math.sin(angle) * distance;
+            
+            particle.animate([
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${endX}px, ${endY}px) scale(0)`, opacity: 0 }
+            ], {
+                duration: 800,
+                easing: 'ease-out'
+            });
+            
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 800);
+        }, i * 50);
+    }
+});
+
+// ==================== NEON SCROLL EFFECTS ====================
+let lastScrollY = window.scrollY;
+
+window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
+    const scrollDiff = Math.abs(currentScrollY - lastScrollY);
+    
+    // Create scroll particles
+    if (scrollDiff > 5) {
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: fixed;
+                    width: 2px;
+                    height: 10px;
+                    background: linear-gradient(to bottom, var(--primary-color), transparent);
+                    right: 20px;
+                    top: ${Math.random() * window.innerHeight}px;
+                    pointer-events: none;
+                    z-index: 9995;
+                    animation: neon-scroll-particle 1s ease-out forwards;
+                    box-shadow: 0 0 5px var(--primary-color);
+                `;
+                
+                particle.animate([
+                    { transform: 'translateX(0)', opacity: 1 },
+                    { transform: 'translateX(-100px)', opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                });
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000);
+            }, i * 100);
+        }
+    }
+    
+    lastScrollY = currentScrollY;
+});
+
+// ==================== NEON TYPING INDICATOR ====================
+function addTypingIndicator() {
+    const inputs = document.querySelectorAll('input, textarea');
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', (e) => {
+            // Create typing spark
+            const spark = document.createElement('div');
+            const rect = input.getBoundingClientRect();
+            
+            spark.style.cssText = `
+                position: fixed;
+                width: 4px;
+                height: 4px;
+                background: var(--neon-green);
+                border-radius: 50%;
+                left: ${rect.right - 10}px;
+                top: ${rect.top + rect.height / 2}px;
+                pointer-events: none;
+                z-index: 9994;
+                animation: neon-typing-spark 0.3s ease-out forwards;
+                box-shadow: 0 0 10px var(--neon-green);
+            `;
+            
+            spark.animate([
+                { transform: 'scale(1)', opacity: 1 },
+                { transform: 'scale(0)', opacity: 0 }
+            ], {
+                duration: 300,
+                easing: 'ease-out'
+            });
+            
+            document.body.appendChild(spark);
+            
+            setTimeout(() => {
+                spark.remove();
+            }, 300);
+        });
+    });
+}
+
 // ==================== INITIALIZE ON DOM READY ====================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Portfolio loaded successfully! 🚀');
@@ -551,4 +855,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         document.body.style.opacity = '1';
     }, 100);
+    
+    // Initialize neon effects
+    createNeonParticles();
+    addTypingIndicator();
+    
+    // Add keyboard shortcut to toggle trail effects
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 't' || e.key === 'T') {
+            trailActive = !trailActive;
+            showNotification(`Neon trails ${trailActive ? 'enabled' : 'disabled'}!`, 'info');
+        }
+    });
 });
